@@ -1,10 +1,7 @@
 name: flutter_svg_editor
 description: >
-  A powerful Flutter package for dynamically editing and manipulating SVG
-  files.  Features include color modification, rotation, scaling, AI-powered SVG
-  optimization,  and animation tools. Perfect for web, mobile, and desktop
-  applications.
-version: 1.0.1
+  A Flutter package for editing SVG files with color, rotation, AI optimization, and animation tools. Supports web, mobile, and desktop apps.
+version: 1.0.3
 homepage: https://github.com/Rajkumar-coderm/flutter_svg_editor
 
 environment:
@@ -12,12 +9,12 @@ environment:
   flutter: ">=3.3.0"
 
 dependencies:
-  file_picker: ^8.0.7
+  file_picker: ^8.1.2
   flutter:
     sdk: flutter
   flutter_colorpicker: ^1.1.0
   flutter_svg: ^2.0.10+1
-  web: ^0.5.1
+  web: ^1.0.0
   xml: ^6.5.0
 
 dev_dependencies:

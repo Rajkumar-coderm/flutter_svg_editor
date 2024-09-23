@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg_editor/flutter_svg_editor.dart';
 
+// Extension on Color class to provide a toHex method
 extension ColorHex on Color {
+  /// Returns a string representation of the color in hexadecimal format
+  ///
+  /// Convert the color value to a hexadecimal string using radix 16
+  /// Pad the result with leading zeros to ensure a minimum length of 8 characters
   String toHex() => '#${value.toRadixString(16).padLeft(8, '0')}';
 }
 
 extension HexColorExtension on String {
+  /// Returns a hexadecimal color code from a color name or a hexadecimal string
+  ///
+  /// If the input string starts with '#', it is assumed to be a hexadecimal color code
+  /// Otherwise, it is assumed to be a color name and is looked up in the SvgColorsCodes data
   String get colorTextToHexColor {
     if (!startsWith('#')) {
       final colorsCode = SvgColorsCodes.colorsAndCodesData;
@@ -23,6 +32,10 @@ extension HexColorExtension on String {
     return this;
   }
 
+  /// Converts a hexadecimal color code or a color name to a Color object
+  ///
+  /// If the input string starts with '#', it is assumed to be a hexadecimal color code
+  /// Otherwise, it is assumed to be a color name and is looked up in the SvgColorsCodes data
   Color toHexColorCode() {
     if (startsWith('#')) {
       var hexString = toUpperCase().replaceAll('#', '');

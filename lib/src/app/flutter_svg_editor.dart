@@ -17,6 +17,21 @@ export '../widget/widget.dart';
 
 typedef SvgDataCallback = Function(String svgValue);
 
+/// FlutterSvgEditor is a powerful widget that enables users to edit and manipulate SVG images with ease.
+///
+/// With this widget, users can upload new SVG images from their device or the web, edit the colors and attributes of individual SVG elements,
+/// rotate and transform the image to their liking, copy and reset the SVG data, and even download the edited image as a file.
+///
+/// What's more, the widget provides a range of callbacks that allow developers to track changes to the SVG data in real-time,
+/// such as when the user edits the colors or resets the image to its original state.
+/// Example.
+/// ```dart
+/// FlutterSvgEditor(
+///  onChange: (svgValue) {},
+///  onCopied: (svgValue) {},
+///  onReset: (svgValue) {},
+/// )
+/// ```
 class FlutterSvgEditor extends StatefulWidget {
   const FlutterSvgEditor({
     super.key,

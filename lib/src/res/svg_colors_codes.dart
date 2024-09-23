@@ -1,4 +1,6 @@
+// A static class that stores a mapping of SVG color codes to their corresponding color names.
 class SvgColorsCodes {
+  // A static map that contains color codes as keys and their corresponding color names as values.
   static Map<String, dynamic> colorsAndCodesData = {
     '#4c4f56': 'Abbey',
     '#0048ba': 'Absolute Zero',
