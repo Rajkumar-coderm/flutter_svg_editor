@@ -1,3 +1,8 @@
 ## 1.0.0
 
-* TODO: Describe initial release.
+* Make The Package and push initially
+
+## 1.0.1
+
+* Sort dependencies
+
