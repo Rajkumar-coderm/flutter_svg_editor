@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'dart:io';
-import 'dart:math' as math;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -81,9 +80,7 @@ class FlutterSvgEditorState extends State<FlutterSvgEditor> {
 
   bool _dragging = false;
 
-  double _rotationAngle = 0;
-
-  SvgImageRotation _selectedRotationAngle = SvgImageRotation.up;
+  SvgImageRotation _selectedRotationAngle = SvgImageRotation.original;
 
   final overlaySteteKey = GlobalKey<SvgColorPalateWidgetState>();
 
@@ -230,8 +227,7 @@ class FlutterSvgEditorState extends State<FlutterSvgEditor> {
       _parsedSvgDocument = document;
       _editedSvg = _inisialSvgString ?? '';
       _inisialSvgString = _editedSvg;
-      _selectedRotationAngle = SvgImageRotation.up;
-      _rotationAngle = 0;
+      _selectedRotationAngle = SvgImageRotation.original;
     });
     widget.onReset?.call(_editedSvg);
   }
@@ -248,12 +244,22 @@ class FlutterSvgEditorState extends State<FlutterSvgEditor> {
       final document = xml.XmlDocument.parse(_editedSvg);
       final svgElement = document.findAllElements('svg').first;
 
+      // Get the current width and height
+      var currentWidth =
+          double.tryParse(svgElement.getAttribute('width') ?? '0') ?? 0;
+      var currentHeight =
+          double.tryParse(svgElement.getAttribute('height') ?? '0') ?? 0;
+
       // Check for existing transforms and remove any previous rotate transforms
       var existingTransform = svgElement.getAttribute('transform') ?? '';
-      existingTransform = _removePreviousRotation(existingTransform);
+      existingTransform = existingTransform
+          .replaceAll(RegExp(r'translate\([^)]+\)'), '')
+          .replaceAll(RegExp(r'scale\([^)]+\)'), '')
+          .trim();
 
       // Apply the new rotation transformation
-      final newTransform = 'rotate(${rotation.angle} 0 0)';
+      final newTransform =
+          'translate(${rotation.translate(width: currentWidth, height: currentHeight).x}, ${rotation.translate(width: currentWidth, height: currentHeight).y}) scale(${rotation.vectors.x}, ${rotation.vectors.x}) translate(${rotation.translate(width: currentWidth, height: currentHeight).x}, ${rotation.translate(width: currentWidth, height: currentHeight).y})';
 
       // Combine the new rotation with any other existing transforms
       final updatedTransform = existingTransform.isNotEmpty
@@ -267,18 +273,11 @@ class FlutterSvgEditorState extends State<FlutterSvgEditor> {
       setState(() {
         _editedSvg = document.toXmlString(pretty: true);
         _parsedSvgDocument = document;
-        _rotationAngle = rotation.angle * (math.pi / 180);
         _selectedRotationAngle = rotation;
       });
     } catch (e, st) {
       log('Error rotating SVG: $e\n$st');
     }
-  }
-
-  // Helper method to remove any previous rotation from the transform attribute
-  String _removePreviousRotation(String transform) {
-    final rotationRegex = RegExp(r'rotate\([^)]*\)');
-    return transform.replaceAll(rotationRegex, '').trim();
   }
 
   @override
@@ -325,13 +324,13 @@ class FlutterSvgEditorState extends State<FlutterSvgEditor> {
                                         height: constraints.maxHeight / 2,
                                         child: SvgImagePreviewBody(
                                           editedSvg: _editedSvg,
-                                          rotationAngle: _rotationAngle,
+                                          rotationAngle: _selectedRotationAngle,
                                         ),
                                       )
                                     : Expanded(
                                         child: SvgImagePreviewBody(
                                           editedSvg: _editedSvg,
-                                          rotationAngle: _rotationAngle,
+                                          rotationAngle: _selectedRotationAngle,
                                         ),
                                       ),
                                 const VerticalDivider(
@@ -375,12 +374,12 @@ class SvgImagePreviewBody extends StatelessWidget {
   const SvgImagePreviewBody({
     super.key,
     required String editedSvg,
-    required double rotationAngle,
+    required SvgImageRotation rotationAngle,
   })  : _editedSvg = editedSvg,
         _rotationAngle = rotationAngle;
 
   final String _editedSvg;
-  final double _rotationAngle;
+  final SvgImageRotation _rotationAngle;
 
   @override
   Widget build(BuildContext context) => Container(

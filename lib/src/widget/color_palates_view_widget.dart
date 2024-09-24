@@ -267,19 +267,20 @@ class SvgColorPalateWidgetState extends State<SvgColorPalateWidget> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: List.generate(
-                          SvgImageRotation.values.length,
-                          (index) => InkWell(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: List.generate(
+                        SvgImageRotation.values.length,
+                        (index) {
+                          final element = SvgImageRotation.values[index];
+                          return InkWell(
                             hoverColor: Colors.transparent,
                             focusColor: Colors.transparent,
                             splashColor: Colors.transparent,
                             highlightColor: Colors.transparent,
                             onTap: () {
-                              widget.onRotate
-                                  ?.call(SvgImageRotation.values[index]);
+                              widget.onRotate?.call(element);
                             },
                             child: AnimatedContainer(
                               duration: const Duration(
@@ -296,30 +297,22 @@ class SvgColorPalateWidgetState extends State<SvgColorPalateWidget> {
                               ),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(5),
-                                color: widget.rotation ==
-                                        SvgImageRotation.values[index]
+                                color: widget.rotation == element
                                     ? Colors.white
                                     : Colors.transparent,
                               ),
-                              child: Transform.flip(
-                                flipX: false,
-                                flipY: SvgImageRotation.values[index] ==
-                                            SvgImageRotation.right ||
-                                        SvgImageRotation.values[index] ==
-                                            SvgImageRotation.left
-                                    ? true
-                                    : false,
-                                child: SvgPicture.string(
-                                  '''<svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M12.4985 1.5625L12.4985 20.3125H3.12354L12.4985 1.5625ZM14.061 1.57166L23.4238 20.3125H14.061L14.061 1.57166ZM15.6235 8.19397V18.75H20.9L15.6235 8.19397Z"
-                            fill="#555555" />
-                    </svg>''',
+                              child: Tooltip(
+                                message: element.iconAsset,
+                                child: SvgPicture.asset(
+                                  element.iconAsset,
+                                  package: 'flutter_svg_editor',
                                 ),
                               ),
                             ),
-                          ),
-                        )),
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 ],
               ),

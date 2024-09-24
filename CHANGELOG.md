@@ -1,3 +1,9 @@
+## 1.0.4
+
+* Update the svg image rotation as angle
+* update the intenal code.
+* Update code stability.
+
 ## 1.0.3
 
 * Update the documention on All method that is use for users.

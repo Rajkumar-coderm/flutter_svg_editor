@@ -11,10 +11,20 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: FlutterSvgEditor(
-        onChange: (svgValue) {},
-        onCopied: (svgValue) {},
-        onReset: (svgValue) {},
+      home: Center(
+        child: SizedBox(
+          width: SvgEditorUtils.isMobile(context)
+              ? SvgEditorUtils.percentegeWidth(context, 1)
+              : SvgEditorUtils.percentegeWidth(context, .7),
+          height: SvgEditorUtils.isMobile(context)
+              ? SvgEditorUtils.percentegeHeight(context, 1)
+              : SvgEditorUtils.percentegeHeight(context, .7),
+          child: FlutterSvgEditor(
+            onChange: (svgValue) {},
+            onCopied: (svgValue) {},
+            onReset: (svgValue) {},
+          ),
+        ),
       ),
     );
   }
