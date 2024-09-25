@@ -17,6 +17,7 @@ dependencies:
   flutter_svg: ^2.0.10+1
   flutter_web_plugins:
     sdk: flutter
+  path_provider: ^2.1.4
   plugin_platform_interface: ^2.1.8
   web: ^1.0.0
   xml: ^6.5.0

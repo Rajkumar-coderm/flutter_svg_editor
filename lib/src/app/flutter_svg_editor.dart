@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_svg_editor/src/app/flutter_svg_editor.dart';
 import 'package:flutter_svg_editor/src/managers/mobile_html_manager.dart'
     if (dart.library.html) 'package:flutter_svg_editor/src/managers/web_html_manager.dart'
     as multi_platform;
+import 'package:path_provider/path_provider.dart';
 import 'package:xml/xml.dart' as xml;
 
 export '../model/model.dart';
@@ -236,18 +238,23 @@ class FlutterSvgEditorState extends State<FlutterSvgEditor> {
           _uploadedFileName ?? '',
         );
       } else {
-        final result = await FilePicker.platform.saveFile(
-          fileName: _uploadedFileName,
-        );
-        if (result != null) {
-          final file = File(result);
-          await file.writeAsString(_editedSvg);
+        Directory? directory;
+        if (Platform.isAndroid) {
+          directory = Directory('/storage/emulated/0/Download');
         } else {
-          log('Save operation was canceled.');
+          directory = await getApplicationDocumentsDirectory();
         }
+        // Ensure the directory exists
+        if (!directory.existsSync()) {
+          directory.createSync(recursive: true);
+        }
+        // File path
+        final filePath = '${directory.path}/${_uploadedFileName ?? ''}';
+        final file = File(filePath);
+        await file.writeAsString(_editedSvg);
       }
-    } catch (e) {
-      log('Error downloading SVG: $e');
+    } catch (e, st) {
+      log('Error downloading SVG: $e $st ');
     }
   }
 
