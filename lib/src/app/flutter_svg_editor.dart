@@ -80,6 +80,8 @@ class FlutterSvgEditorState extends State<FlutterSvgEditor> {
 
   bool _dragging = false;
 
+  String? _uploadedFileName;
+
   SvgImageRotation _selectedRotationAngle = SvgImageRotation.original;
 
   final overlaySteteKey = GlobalKey<SvgColorPalateWidgetState>();
@@ -91,14 +93,21 @@ class FlutterSvgEditorState extends State<FlutterSvgEditor> {
   }
 
   void initCall() async {
-    var svgData = await multi_platform.HtmlWebManager().setupDragDropListeners(
-      (onDrag) {
-        setState(() {
-          _dragging = onDrag;
-        });
-      },
-    );
-    _loadSvgFromString(svgData);
+    try {
+      var result = await multi_platform.HtmlWebManager().setupDragDropListeners(
+        (onDrag) {
+          setState(() {
+            _dragging = onDrag;
+          });
+        },
+      );
+      if (result.fileDataString != null) {
+        _uploadedFileName = result.name;
+        _loadSvgFromString(result.fileDataString ?? '');
+      }
+    } catch (e) {
+      log('Error On upload SVG form drag:$e');
+    }
   }
 
   /// GET the all colors form svg picture..
@@ -148,7 +157,8 @@ class FlutterSvgEditorState extends State<FlutterSvgEditor> {
     return uniqueColors;
   }
 
-  /// Change the selected svg color when user tap..
+  /// [changeSelectedColor]Change the selected svg color when user tap..
+  ///
   void changeSelectedColor(
     String initsialColor,
     Color finalColor,
@@ -175,52 +185,84 @@ class FlutterSvgEditorState extends State<FlutterSvgEditor> {
 
   /// Upload new Svg image form device..
   void _uploadNewSvg() async {
-    if (kIsWeb) {
-      var svgData =
-          await multi_platform.HtmlWebManager().uploadNewSvgImageFormWeb();
-      _loadSvgFromString(svgData);
-    } else {
-      var svgData = await uploadSvgFromMobile();
-      if (svgData != null) {
-        _loadSvgFromString(svgData);
-      }
+    var result = await uploadNewSvgFile();
+    if (result != null) {
+      _loadSvgFromString(result);
     }
   }
 
-  // Method to upload an SVG from mobile devices (Android/iOS)
-  Future<String?> uploadSvgFromMobile() async {
+  ///[uploadNewSvgFile] Method to upload an SVG from mobile devices (Android/iOS/Linux Desktop/macOS/web)
+  ///
+  Future<String?> uploadNewSvgFile() async {
     try {
-      final result = await FilePicker.platform.pickFiles(
-        allowCompression: false,
-        allowedExtensions: ['svg'],
-        allowMultiple: false,
-        type: FileType.custom,
-      );
-      if (result != null) {
-        final file = File(result.files.first.path ?? '');
-        var svgContent = await file.readAsString();
-        return svgContent;
+      if (kIsWeb) {
+        var result =
+            await multi_platform.HtmlWebManager().uploadNewSvgImageFormWeb();
+        if (result.fileDataString != null) {
+          _uploadedFileName = result.name;
+          return result.fileDataString;
+        } else {
+          return null;
+        }
       } else {
-        return null;
+        final result = await FilePicker.platform.pickFiles(
+          allowCompression: false,
+          allowedExtensions: ['svg'],
+          allowMultiple: false,
+          type: FileType.custom,
+        );
+        if (result != null) {
+          final file = File(result.files.first.path ?? '');
+          var svgContent = await file.readAsString();
+          _uploadedFileName = result.files.first.name;
+          return svgContent;
+        } else {
+          return null;
+        }
       }
     } catch (e) {
+      log('Error uploading SVG: $e');
       return null;
+    }
+  }
+
+  ///[downloadLatestFile] Download the latest updated file.
+  ///[_editedSvg] this is data string to write new file..
+  Future<void> downloadLatestFile() async {
+    try {
+      if (kIsWeb) {
+        multi_platform.HtmlWebManager().downloadSvg(
+          _editedSvg,
+          _uploadedFileName ?? '',
+        );
+      } else {
+        final result = await FilePicker.platform.saveFile(
+          fileName: _uploadedFileName,
+        );
+        if (result != null) {
+          final file = File(result);
+          await file.writeAsString(_editedSvg);
+        } else {
+          log('Save operation was canceled.');
+        }
+      }
+    } catch (e) {
+      log('Error downloading SVG: $e');
     }
   }
 
   // Parse the SVG string and update the state
   void _loadSvgFromString(String svgString) {
-    final d1 = SvgOptimizer();
-    var optimizeSvg = d1.optimizeSvg(svgString);
-    final document = xml.XmlDocument.parse(optimizeSvg);
+    final document = xml.XmlDocument.parse(svgString);
     setState(() {
       _parsedSvgDocument = document;
-      _editedSvg = optimizeSvg;
-      _inisialSvgString = optimizeSvg;
+      _editedSvg = svgString;
+      _inisialSvgString = svgString;
     });
-    widget.onChange?.call(optimizeSvg);
+    widget.onChange?.call(svgString);
   }
 
+  /// Rest the SVG string on inisial data..
   void resetSvgImage() {
     final document = xml.XmlDocument.parse(_inisialSvgString ?? '');
     setState(() {
@@ -232,13 +274,14 @@ class FlutterSvgEditorState extends State<FlutterSvgEditor> {
     widget.onReset?.call(_editedSvg);
   }
 
+  /// Coppy the data string on clipboard.
   void copySvgData() async {
     await Clipboard.setData(ClipboardData(text: _editedSvg));
     widget.onCopied?.call(_editedSvg);
   }
 
   // Rotate the SVG image and update the transform attribute
-  void _rotateSvg(SvgImageRotation rotation) async {
+  Future<void> flipSvgImage(SvgImageRotation rotation) async {
     try {
       // Parse the SVG XML string to crete one intance of XmlDocument that use for update the svg..
       final document = xml.XmlDocument.parse(_editedSvg);
@@ -278,6 +321,7 @@ class FlutterSvgEditorState extends State<FlutterSvgEditor> {
     } catch (e, st) {
       log('Error rotating SVG: $e\n$st');
     }
+    widget.onChange?.call(_editedSvg);
   }
 
   @override
@@ -315,11 +359,11 @@ class FlutterSvgEditorState extends State<FlutterSvgEditor> {
                         : Expanded(
                             child: Flex(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              direction: SvgEditorUtils.isMobile(context)
+                              direction: Utilities.isMobile(context)
                                   ? Axis.vertical
                                   : Axis.horizontal,
                               children: [
-                                SvgEditorUtils.isMobile(context)
+                                Utilities.isMobile(context)
                                     ? SizedBox(
                                         height: constraints.maxHeight / 2,
                                         child: SvgImagePreviewBody(
@@ -350,12 +394,9 @@ class FlutterSvgEditorState extends State<FlutterSvgEditor> {
                                   },
                                   resetSvgData: resetSvgImage,
                                   copySvgData: copySvgData,
-                                  onRotate: _rotateSvg,
+                                  onRotate: flipSvgImage,
                                   downloadFile: () async {
-                                    multi_platform.HtmlWebManager().downloadSvg(
-                                      _editedSvg,
-                                      'first_data_file.svg',
-                                    );
+                                    await downloadLatestFile();
                                   },
                                 ),
                               ],
@@ -383,21 +424,21 @@ class SvgImagePreviewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: SvgEditorUtils.isMobile(context)
-            ? SvgEditorUtils.percentegeWidth(context, 1)
-            : SvgEditorUtils.percentegeWidth(
+        width: Utilities.isMobile(context)
+            ? Utilities.percentegeWidth(context, 1)
+            : Utilities.percentegeWidth(
                 context,
                 .4,
               ),
-        height: SvgEditorUtils.isMobile(context)
-            ? SvgEditorUtils.percentegeHeight(
+        height: Utilities.isMobile(context)
+            ? Utilities.percentegeHeight(
                 context,
                 .5,
               )
             : double.maxFinite,
         color: Colors.grey.withOpacity(.2),
-        padding: EdgeInsets.all(SvgEditorUtils.isMobile(context) ? 10 : 25),
-        child: SvgEditorUtils.isMobile(context)
+        padding: EdgeInsets.all(Utilities.isMobile(context) ? 10 : 25),
+        child: Utilities.isMobile(context)
             ? SvgImagePreviewCardWidget(
                 editedSvg: _editedSvg,
                 rotation: _rotationAngle,

@@ -1,10 +1,12 @@
+import 'package:flutter_svg_editor/flutter_svg_editor.dart';
+
 class HtmlWebManager {
-  Future<String> uploadNewSvgImageFormWeb() async => '';
+  Future<AppWebFile> uploadNewSvgImageFormWeb() async => AppWebFile();
 
   void downloadSvg(String svgString, String fileName) {}
 
-  Future<String> setupDragDropListeners(
+  Future<AppWebFile> setupDragDropListeners(
     Function(bool onDrag) onDragging,
   ) async =>
-      '';
+      AppWebFile();
 }

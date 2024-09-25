@@ -25,7 +25,7 @@ class _EmptySvgPreviewBoxWidgetState extends State<EmptySvgPreviewBoxWidget> {
   Widget build(BuildContext context) => ColoredBox(
         color: Colors.grey.withOpacity(.2),
         child: SizedBox(
-          height: SvgEditorUtils.isMobile(context)
+          height: Utilities.isMobile(context)
               ? widget.constraints.maxHeight - 73
               : widget.constraints.maxHeight - 73,
           child: Center(
@@ -50,14 +50,14 @@ class _EmptySvgPreviewBoxWidgetState extends State<EmptySvgPreviewBoxWidget> {
                       borderRadius: BorderRadius.circular(100),
                     ),
                     constraints: BoxConstraints(
-                      maxHeight: SvgEditorUtils.isMobile(context)
-                          ? SvgEditorUtils.percentegeHeight(
+                      maxHeight: Utilities.isMobile(context)
+                          ? Utilities.percentegeHeight(
                               context,
                               .3,
                             )
                           : 350.0,
-                      maxWidth: SvgEditorUtils.isMobile(context)
-                          ? SvgEditorUtils.percentegeWidth(
+                      maxWidth: Utilities.isMobile(context)
+                          ? Utilities.percentegeWidth(
                               context,
                               .7,
                             )
@@ -85,7 +85,7 @@ class _EmptySvgPreviewBoxWidgetState extends State<EmptySvgPreviewBoxWidget> {
                                     color: Colors.black,
                                     size: 45,
                                   ),
-                            SvgEditorUtils.boxHeight(10),
+                            Utilities.boxHeight(10),
                             Text(
                               widget.isUploading
                                   ? 'Drop your file to upload'

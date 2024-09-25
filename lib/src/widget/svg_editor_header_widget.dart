@@ -22,7 +22,7 @@ class SvgEditorHeaderWidget extends StatelessWidget {
                 const Icon(
                   Icons.format_color_fill_outlined,
                 ),
-                SvgEditorUtils.boxWidth(10),
+                Utilities.boxWidth(10),
                 const Text(
                   'Color Editor',
                   style: TextStyle(

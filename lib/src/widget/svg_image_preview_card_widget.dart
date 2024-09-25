@@ -13,19 +13,23 @@ class SvgImagePreviewCardWidget extends StatelessWidget {
   final String _editedSvg;
   final SvgImageRotation _rotation;
 
-  double _width(BuildContext context) => SvgEditorUtils.isMobile(context)
-      ? SvgEditorUtils.percentegeWidth(
+  double _width(BuildContext context) => Utilities.isMobile(context)
+      ? Utilities.percentegeWidth(
           context,
           .5,
         )
-      : 400.0;
+      : Utilities.isTablet(context)
+          ? 290.0
+          : 400.0;
 
-  double _height(BuildContext context) => SvgEditorUtils.isMobile(context)
-      ? SvgEditorUtils.percentegeHeight(
+  double _height(BuildContext context) => Utilities.isMobile(context)
+      ? Utilities.percentegeHeight(
           context,
           .5,
         )
-      : 400.0;
+      : Utilities.isTablet(context)
+          ? 290.0
+          : 400.0;
 
   @override
   Widget build(BuildContext context) {

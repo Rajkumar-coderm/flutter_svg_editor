@@ -51,3 +51,10 @@ FlutterSvgEditor(
     // Handle copying of the SVG string data
   },
 )
+```
+## Contributors
+
+<a href="https://github.com/Rajkumar-coderm/flutter_svg_editor/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=Rajkumar-coderm/flutter_svg_editor" />
+</a>
+

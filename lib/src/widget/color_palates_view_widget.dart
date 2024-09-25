@@ -125,10 +125,10 @@ class SvgColorPalateWidgetState extends State<SvgColorPalateWidget> {
   Widget build(BuildContext context) => GestureDetector(
         onTap: closeOverlayEntry,
         child: SizedBox(
-          width: SvgEditorUtils.isMobile(context)
-              ? SvgEditorUtils.percentegeWidth(context, 1)
+          width: Utilities.isMobile(context)
+              ? Utilities.percentegeWidth(context, 1)
               : 350,
-          height: SvgEditorUtils.isMobile(context)
+          height: Utilities.isMobile(context)
               ? (widget.constraints.maxHeight -
                       (widget.constraints.maxHeight / 2)) -
                   74
@@ -164,12 +164,10 @@ class SvgColorPalateWidgetState extends State<SvgColorPalateWidget> {
                       widget.copySvgData?.call();
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          backgroundColor: Colors.white,
-                          closeIconColor: Colors.black,
-                          showCloseIcon: true,
+                          backgroundColor: Colors.black,
                           content: Text(
-                            'Copy',
-                            style: TextStyle(color: Colors.black),
+                            'Copied to clipboard',
+                            style: TextStyle(color: Colors.white),
                           ),
                           width: 200,
                           behavior: SnackBarBehavior.floating,
@@ -191,10 +189,10 @@ class SvgColorPalateWidgetState extends State<SvgColorPalateWidget> {
                   ),
                 ],
               ),
-              SvgEditorUtils.boxHeight(10),
+              Utilities.boxHeight(10),
               SizedBox(
-                width: SvgEditorUtils.isMobile(context)
-                    ? SvgEditorUtils.percentegeWidth(context, 1)
+                width: Utilities.isMobile(context)
+                    ? Utilities.percentegeWidth(context, 1)
                     : 350,
                 child: GridView.builder(
                   shrinkWrap: true,
@@ -216,7 +214,7 @@ class SvgColorPalateWidgetState extends State<SvgColorPalateWidget> {
                       child: InkWell(
                         borderRadius: BorderRadius.circular(100),
                         onTap: () async {
-                          if (SvgEditorUtils.isMobile(context)) {
+                          if (Utilities.isMobile(context)) {
                             await showColorPicker(key.currentContext!, index);
                           } else {
                             closeOverlayEntry();
@@ -244,11 +242,11 @@ class SvgColorPalateWidgetState extends State<SvgColorPalateWidget> {
                   },
                 ),
               ),
-              SvgEditorUtils.boxHeight(10),
+              Utilities.boxHeight(10),
               const Divider(
                 height: .5,
               ),
-              SvgEditorUtils.boxHeight(10),
+              Utilities.boxHeight(10),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -260,7 +258,7 @@ class SvgColorPalateWidgetState extends State<SvgColorPalateWidget> {
                       fontWeight: FontWeight.normal,
                     ),
                   ),
-                  SvgEditorUtils.boxHeight(10),
+                  Utilities.boxHeight(10),
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.grey.withOpacity(.2),

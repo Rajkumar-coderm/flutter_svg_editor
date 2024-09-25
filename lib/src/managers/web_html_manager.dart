@@ -2,11 +2,17 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:html' as html;
 
+import 'package:flutter_svg_editor/flutter_svg_editor.dart';
+
 class HtmlWebManager {
-  Future<String> uploadNewSvgImageFormWeb() async {
+  Future<AppWebFile> uploadNewSvgImageFormWeb() async {
     final svgFile = await _uploadSvg();
     final svgString = await _readFileAsText(svgFile);
-    return svgString;
+    return AppWebFile(
+      fileDataString: svgString,
+      name: svgFile.name,
+      size: svgFile.size,
+    );
   }
 
   // Method to handle file uploading and return the file
@@ -61,7 +67,7 @@ class HtmlWebManager {
     html.Url.revokeObjectUrl(url);
   }
 
-  Future<String> setupDragDropListeners(
+  Future<AppWebFile> setupDragDropListeners(
     Function(bool onDrag) onDragging,
   ) async {
     final body = html.document.body;
@@ -94,6 +100,11 @@ class HtmlWebManager {
         completer.completeError('Error reading file');
       }
     });
-    return _readFileAsText(await completer.future);
+    var _file = await completer.future;
+    return AppWebFile(
+      fileDataString: await _readFileAsText(_file),
+      name: _file.name,
+      size: _file.size,
+    );
   }
 }
