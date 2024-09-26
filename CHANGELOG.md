@@ -1,3 +1,8 @@
+## 1.0.5
+
+* Added Download upldated Svg File method.
+* Update mobile svg roation UI.
+
 ## 1.0.4
 
 * Update the svg image rotation as angle

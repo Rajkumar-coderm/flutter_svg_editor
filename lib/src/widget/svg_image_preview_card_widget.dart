@@ -14,19 +14,13 @@ class SvgImagePreviewCardWidget extends StatelessWidget {
   final SvgImageRotation _rotation;
 
   double _width(BuildContext context) => Utilities.isMobile(context)
-      ? Utilities.percentegeWidth(
-          context,
-          .5,
-        )
+      ? 325.0
       : Utilities.isTablet(context)
           ? 290.0
           : 400.0;
 
   double _height(BuildContext context) => Utilities.isMobile(context)
-      ? Utilities.percentegeHeight(
-          context,
-          .5,
-        )
+      ? 350.0
       : Utilities.isTablet(context)
           ? 290.0
           : 400.0;
@@ -45,9 +39,11 @@ class SvgImagePreviewCardWidget extends StatelessWidget {
       elevation: 5,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SizedBox(
-          height: _height(context),
-          width: _width(context),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: _height(context),
+            maxWidth: _width(context),
+          ),
           child: Transform(
             transform: Matrix4.identity()
               ..translate(

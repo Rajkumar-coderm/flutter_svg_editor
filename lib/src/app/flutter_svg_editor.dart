@@ -5,7 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg_editor/src/app/flutter_svg_editor.dart';
+import 'package:flutter_svg_editor/flutter_svg_editor.dart';
 import 'package:flutter_svg_editor/src/managers/mobile_html_manager.dart'
     if (dart.library.html) 'package:flutter_svg_editor/src/managers/web_html_manager.dart'
     as multi_platform;
@@ -238,6 +238,9 @@ class FlutterSvgEditorState extends State<FlutterSvgEditor> {
           _uploadedFileName ?? '',
         );
       } else {
+        if (Platform.isLinux) {
+          return;
+        }
         Directory? directory;
         if (Platform.isAndroid) {
           directory = Directory('/storage/emulated/0/Download');
